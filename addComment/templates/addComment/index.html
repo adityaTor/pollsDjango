@@ -1,0 +1,68 @@
+<body>
+<form id="commentForm">
+	<textarea name="comment" rows="10" cols="30" maxlength="250" required id="comment"></textarea>
+	<br>
+	<input type="submit" name="action" value="Comment">
+</form>
+<button id="loadComments">Load Comments</button>
+<br>
+<div>
+	<ul id="Comments">
+	</ul>
+</div>
+</body>
+
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+<script>
+var csrftoken = $.cookie('csrftoken');
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+
+$('#commentForm').submit(function(e){
+	e.preventDefault();
+  	$.ajax({
+  		url: 'createComment/',
+  		type: 'POST',
+  		data:{
+  			comment: document.getElementById("comment").value
+  		},
+  		success: function(data){
+  			obj = JSON.parse(data)
+  			$('#Comments').prepend('<li>'+obj[0].fields.comment+'</li>');
+  		},
+  	});
+});
+
+$(document).ready(function(){
+    $("#loadComments").click(function(e) {
+    	$.get('loadComments/', function(data){
+    		obj = JSON.parse(data) //add try catch
+    		var comments = "";
+    		for(var i=0;i<obj.length;i++){
+  				comments += '<li>'+obj[i].fields.comment+'</li>';
+  			}
+  			$('#Comments').html(comments);
+    	});
+
+    	$("#loadComments").hide();
+ });
+
+
+});
+
+
+
+</script>

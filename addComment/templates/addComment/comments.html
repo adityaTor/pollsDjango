@@ -1,0 +1,12 @@
+<h1>Comments Posted</h1>
+<form action="{% url 'addComment:deleteComment' %}" method="post">
+{% csrf_token %}
+{% if comments %}
+    {% for i in comments %}
+        <li><input type="checkbox" name="delComment" value="{{i.id}}">{{ i.comment}}</li>
+    {% endfor %}   
+{% else %}
+    <p>No Comments are available.</p>
+{% endif %}
+<input type="submit" name="del" value="delete">
+</form>

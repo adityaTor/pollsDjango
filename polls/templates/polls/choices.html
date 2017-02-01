@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+<h1>{{ question.question}}</h1>
+{% block content %}
+<form id="voteForm">
+	{% for choice in question.choice_set.all %}
+		<input type="radio" name="choice" value="{{choice.id}}"> {{choice.choice}} -- <span id="{{choice.id}}">{{choice.votes}}</span><br>
+	{% endfor %}
+	<br>
+<input type="submit" name="vote" value="Vote">
+</form>
+
+<script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js"></script>
+
+
+<script>
+var csrftoken = $.cookie('csrftoken');
+
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
+$.ajaxSetup({
+    beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+            xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+    }
+});
+
+
+$('#voteForm').submit(function(e){
+	e.preventDefault();
+  		$.ajax({
+  			url: "{% url 'polls:vote' question.id %}",
+  			type: 'POST',
+  			data:{
+  				choice: $('input:checked').val()
+  			},
+  			success: function(data){
+  				changeSpan(data);
+  			},
+  	});
+});
+
+
+function changeSpan(data) {
+	var id = $('input:checked').val();
+	$('#' + id).html(data);
+}
+
+</script>
+{% endblock %}

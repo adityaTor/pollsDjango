@@ -3,21 +3,30 @@
 {% load staticfiles %}
 
 {% block content %}
-<form method="" action="">
-	<div class='table'>
-    <table class='no_error'>
-        {{ form.as_table }}
-    </table>
-    </div>
+<form method="POST" action="">
+{% csrf_token %}
+    {{questionForm.as_p}}
+
+    {{choiceFormset.management_form}}
+<div id="allForm">
+    {% for form in choiceFormset %}
+        {{form.as_p}}
+    {% endfor %}
+</div>
 <input type="button" value="addChoice" id="add_more">
+<input type="submit" name="submit">
 </form>
 <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.1.1.min.js"></script>
 <script>
-	 $('#add_more').click(function() {
-        cloneMore('div.table:last', 'service');
+    $(document).ready(function() {
+        // body...
+        $('#add_more').click(function(){
+            cloneMore('div p:last','form')
+        });
     });
 
-	function cloneMore(selector, type) {
+    function cloneMore(selector,type) {
+        // body...
     var newElement = $(selector).clone(true);
     var total = $('#id_' + type + '-TOTAL_FORMS').val();
     newElement.find(':input').each(function() {
@@ -32,6 +41,6 @@
     total++;
     $('#id_' + type + '-TOTAL_FORMS').val(total);
     $(selector).after(newElement);
-}
+    }
 </script>
 {% endblock %}

@@ -10,5 +10,6 @@ urlpatterns = [
 	url('^', include('django.contrib.auth.urls')),
 	url(r'^myPolls/$',views.userPolls.as_view(),name='userPolls'),
 	url(r'myPolls/add/$', views.createPoll, name='createPoll'),
+	url(r'^signUp/$',views.registration.as_view(),name='registerUser'),
 	url(r'^test/$',views.test,name='test'),
 ]
